@@ -1,0 +1,177 @@
+<canvas id="ctx" width="600" height="600";"></canvas>
+<script>
+var ctx = document.getElementById("ctx").getContext("2d")
+var CurrentPlayer = 0;
+var selectedRectX = 1;
+var selectedRectY = 1;
+const Grid =[[0, 0, 0],
+             [0, 0, 0],
+             [0, 0, 0]
+];
+
+function drawLine(x1, y1, x2, y2, gA, strokeStyle, strokeWidth){
+ctx.globalAlpha = gA;
+ctx.strokeStyle = strokeStyle;
+ctx.lineWidth = strokeWidth;
+ctx.beginPath();
+ctx.moveTo(x1, y1);
+ctx.lineTo(x2, y2);
+ctx.stroke();
+}
+
+function drawX(col, row) {
+  // Calculate the coordinates for the 'X'
+  var x1 = (col * 200) + 24;
+  var y1 = (row * 200) + 24;
+  var x2 = (col * 200) + 176;
+  var y2 = (row * 200) + 176;
+  var x3 = (col * 200) + 24;
+  var y3 = (row * 200) + 176;
+  var x4 = (col * 200) + 176;
+  var y4 = (row * 200) + 24;
+
+  // Draw the lines
+  drawLine(x1, y1, x2, y2, 1, '#FF0000', 12);
+  drawLine(x3, y3, x4, y4, 1, '#FF0000', 12);
+}
+
+
+ function drawO(col, row){
+ ctx.GlobalAlpha = 1
+ ctx.beginPath();
+ ctx.arc((col * 200) + 100, (row * 200) + 100, 84, 0, 2 * Math.PI, false);//84 is the offset since every tile is 188 a circle can't have a radius bigger than 188/2 aka 94 than you remove 10 to have a small buffer zone
+ ctx.lineWidth = 12;
+ ctx.strokeStyle = '#0000FF';
+ ctx.stroke();
+ }
+
+
+function InitializeBoard(BGColor){
+ctx.globalAlpha = 1;
+ctx.fillStyle = '#FFFFFF';
+ctx.fillRect(0, 0, 600, 600)
+ctx.globalAlpha = 0.25;
+ctx.fillStyle = BGColor;
+ctx.fillRect(0, 0, 600, 600);
+ctx.globalAlpha = 0.5;
+ctx.fillRect(selectedRectX * 200,selectedRectY * 200 , 200, 200);
+drawLine(0, 0, 0, 600, 1, '#000000', 12);
+drawLine(200, 0, 200, 600, 1, '#000000', 12);
+drawLine(400, 0, 400, 600, 1, '#000000', 12);
+drawLine(600, 0, 600, 600, 1, '#000000', 12);
+drawLine(0, 0, 600, 0, 1, '#000000', 12);
+drawLine(0, 200, 600, 200, 1, '#000000', 12);
+drawLine(0, 400, 600, 400, 1, '#000000', 12);
+drawLine(0, 600, 600, 600, 1, '#000000', 12);
+}
+
+
+function InitializeWithBG(){
+if (CurrentPlayer < 9 && CurrentPlayer % 2 == 0){
+InitializeBoard('#FF0000');
+}else if (CurrentPlayer < 9 && CurrentPlayer % 2 == 1){
+InitializeBoard('#0000FF');
+}else{
+InitializeBoard('#FFFFFF');
+}
+Drawxo();
+}
+
+
+function Drawxo(){
+for (let X = 0; X < 3; X++) {
+for (let Y = 0; Y < 3; Y++) {
+ if(Grid[X][Y] == 1){
+ drawX(X, Y);
+ }else if(Grid[X][Y] == 2){
+ drawO(X, Y);
+ }
+}
+}
+}
+
+
+InitializeWithBG();
+
+
+document.onkeydown = function (e) {
+  if(e.key == 'ArrowRight') {
+    selectedRectX ++;
+    if(selectedRectX == 3){
+      selectedRectX = 0;
+    }
+  }else if (e.key == 'ArrowLeft'){
+    selectedRectX --;
+    if(selectedRectX == -1){
+      selectedRectX = 2;
+  }
+  }else if (e.key == 'ArrowUp'){
+    selectedRectY --;
+    if(selectedRectY == -1){
+      selectedRectY = 2;
+  }
+  }else if (e.key == 'ArrowDown'){
+    selectedRectY ++;
+    if(selectedRectY == 3){
+      selectedRectY = 0;
+    }
+  }
+  if(e.key == 'Enter'){
+    if(Grid[selectedRectX][selectedRectY] == 0){
+      Grid[selectedRectX][selectedRectY] = (CurrentPlayer % 2) +1;
+      CurrentPlayer ++;
+      Drawxo();
+      wiiinnnnerToalert();
+    }
+  } 
+  InitializeWithBG()
+}
+ 
+ 
+ function wiiinnnnerToalert(){
+ if(checkWinner() == 1){
+ alert('XIN');
+ CurrentPlayer = 9;
+ }else if(checkWinner() == 2){
+ alert('oin');
+ CurrentPlayer = 9;
+ }else if(checkWinner() == 0 && CurrentPlayer == 9){
+ alert('tIe WiN');
+ CurrentPlayer = 9;
+ }else {
+ console.log('no wiiinnnner');
+ }
+ }
+ 
+ 
+ function checkWinner() {
+
+  // Check rows
+  for (let row = 0; row < 3; row++) {
+    if (Grid[row][0] !== 0 && Grid[row][0] === Grid[row][1] && Grid[row][0] === Grid[row][2]) {
+      return Grid[row][0];
+    }
+  }
+
+  // Check columns
+  for (let col = 0; col < 3; col++) {
+    if (Grid[0][col] !== 0 && Grid[0][col] === Grid[1][col] && Grid[0][col] === Grid[2][col]) {
+      return Grid[0][col];
+    }
+  }
+
+  // Check diagonals
+  if (Grid[0][0] !== 0 && Grid[0][0] === Grid[1][1] && Grid[0][0] === Grid[2][2]) {
+    return Grid[0][0];
+  }
+
+  if (Grid[0][2] !== 0 && Grid[0][2] === Grid[1][1] && Grid[0][2] === Grid[2][0]) {
+    return Grid[0][2];
+  }
+
+  // If no winner found
+  return 0;
+}
+
+
+</script>
